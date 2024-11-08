@@ -14,7 +14,7 @@ function CarList() {
   useEffect(() => {
     const getCars = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/cars');
+        const response = await axios.get('https://ez-cars-2-39214c762f0e.herokuapp.com/api/cars');
         setCars(response.data);
       } catch (error) {
         console.error('Error al obtener los autos:', error);
@@ -47,10 +47,10 @@ function CarList() {
       await tx.wait();
 
       // Marcar el auto como vendido en el backend
-      await axios.put(`http://localhost:5000/api/cars/${car._id}`);
+      await axios.put(`https://ez-cars-2-39214c762f0e.herokuapp.com/api/cars/${car._id}`);
 
       // Registrar la compra en el backend
-      await axios.post('http://localhost:5000/api/purchases', {
+      await axios.post('https://ez-cars-2-39214c762f0e.herokuapp.com/api/purchases', {
         carId: car._id,
         buyerAddress: currentAccount,
       });

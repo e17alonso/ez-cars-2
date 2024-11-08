@@ -11,7 +11,7 @@ function PurchaseHistory() {
   useEffect(() => {
     const getPurchases = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/purchases/${currentAccount}`);
+        const response = await axios.get(`https://ez-cars-2-39214c762f0e.herokuapp.com/api/purchases/${currentAccount}`);
         setPurchases(response.data);
       } catch (error) {
         console.error('Error al obtener el historial de compras:', error);

@@ -16,7 +16,7 @@ function Faucet() {
     }
 
     try {
-      const response = await axios.post('http://localhost:5000/api/faucet', {
+      const response = await axios.post('https://ez-cars-2-39214c762f0e.herokuapp.com/api/faucet', {
         toAddress: currentAccount,
         amount: amount, // Cantidad especificada por el usuario
       });

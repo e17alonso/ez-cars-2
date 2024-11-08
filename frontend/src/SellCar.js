@@ -28,7 +28,7 @@ function SellCar() {
     }
 
     try {
-      await axios.post('http://localhost:5000/api/cars', carDetails);
+      await axios.post('https://ez-cars-2-39214c762f0e.herokuapp.com/api/cars', carDetails);
       alert('Auto enlistado exitosamente');
       // Resetear formulario
       setCarDetails({
