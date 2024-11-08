@@ -21,3 +21,5 @@ yarn-error.log*
 # Otros archivos generados
 coverage/
 
+
+.vercel
