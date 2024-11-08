@@ -1,0 +1,23 @@
+# Dependencias de Node.js
+node_modules/
+
+# Directorio de build
+build/
+
+# Variables de entorno
+.env
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Archivos de configuración de editor
+.vscode/
+.idea/
+
+# Otros archivos generados
+coverage/
+
