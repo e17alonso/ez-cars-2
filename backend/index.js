@@ -10,8 +10,22 @@ const Car = require('./models/Car');
 const Purchase = require('./models/Purchase');
 
 const app = express();
-app.use(cors());
+// Configurar CORS
+const allowedOrigins = ['http://localhost:3000','https://ez-cars-2-6wjaajiyg-e17alonsos-projects.vercel.app','https://ez-cars-2.vercel.app']; // Añade aquí tus orígenes permitidos
+
+app.use(cors({
+  origin: function(origin, callback){
+    // Permitir solicitudes sin origin (como Postman)
+    if(!origin) return callback(null, true);
+    if(allowedOrigins.indexOf(origin) === -1){
+      const msg = 'La política de CORS de este servidor no permite el acceso desde el origen especificado.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  }
+}));
 app.use(express.json());
+
 
 // Ruta de prueba
 app.get('/', (req, res) => {
