@@ -9,9 +9,10 @@ function SellCar() {
   const { currentAccount } = useContext(Web3Context);
   const [sellerAddress, setSellerAddress] = useState(currentAccount);
   const [carDetails, setCarDetails] = useState({
-    make: '',
+    brand: '',
     model: '',
     year: '',
+    mileage: '',
     price: '',
   });
   const [loading, setLoading] = useState(false);
@@ -33,8 +34,21 @@ function SellCar() {
     e.preventDefault();
 
     // Validaciones básicas
-    if (!sellerAddress || !carDetails.make || !carDetails.model || !carDetails.year || !carDetails.price) {
+    if (
+      !sellerAddress ||
+      !carDetails.brand ||
+      !carDetails.model ||
+      !carDetails.year ||
+      !carDetails.mileage ||
+      !carDetails.price
+    ) {
       setMessage('Por favor, completa todos los campos.');
+      return;
+    }
+
+    // Validar números
+    if (isNaN(carDetails.year) || isNaN(carDetails.mileage) || isNaN(carDetails.price)) {
+      setMessage('Asegúrate de que Año, Kilometraje y Precio sean números válidos.');
       return;
     }
 
@@ -44,21 +58,26 @@ function SellCar() {
     try {
       const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/cars`, {
         sellerAddress,
-        make: carDetails.make,
+        brand: carDetails.brand,
         model: carDetails.model,
-        year: carDetails.year,
-        price: carDetails.price,
+        year: Number(carDetails.year),
+        mileage: Number(carDetails.mileage),
+        price: Number(carDetails.price),
       });
 
       setMessage('Auto enlistado exitosamente.');
-      
+
       // Redirigir a la página de Autos Disponibles después de 2 segundos
       setTimeout(() => {
         navigate('/car-list');
       }, 2000);
     } catch (error) {
       console.error('Error al enlistar el auto:', error);
-      setMessage('Error al enlistar el auto. Inténtalo nuevamente.');
+      if (error.response && error.response.data) {
+        setMessage(`Error: ${error.response.data}`);
+      } else {
+        setMessage('Error al enlistar el auto. Inténtalo nuevamente.');
+      }
     } finally {
       setLoading(false);
     }
@@ -87,8 +106,8 @@ function SellCar() {
 
       <TextField
         label="Marca"
-        name="make"
-        value={carDetails.make}
+        name="brand"
+        value={carDetails.brand}
         onChange={handleChange}
         fullWidth
         margin="normal"
@@ -113,6 +132,18 @@ function SellCar() {
         label="Año"
         name="year"
         value={carDetails.year}
+        onChange={handleChange}
+        fullWidth
+        margin="normal"
+        type="number"
+        required
+        disabled={loading}
+      />
+
+      <TextField
+        label="Kilometraje"
+        name="mileage"
+        value={carDetails.mileage}
         onChange={handleChange}
         fullWidth
         margin="normal"
