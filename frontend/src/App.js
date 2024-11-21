@@ -1,20 +1,20 @@
 // frontend/src/App.js
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { 
-  Container, 
-  AppBar, 
-  Toolbar, 
-  Typography, 
-  Tabs, 
-  Tab, 
-  Box, 
-  IconButton, 
-  Drawer, 
-  List, 
-  ListItem, 
-  ListItemIcon, 
-  ListItemText 
+  CssBaseline,
+  Box,
+  AppBar,
+  Toolbar,
+  Typography,
+  IconButton,
+  Drawer,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  useTheme,
+  useMediaQuery,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
@@ -28,11 +28,15 @@ import PurchaseHistory from './PurchaseHistory';
 import TokenBalanceWeb3 from './TokenBalanceWeb3';
 import { Web3Provider } from './Web3Context';
 
-function App() {
-  const [value, setValue] = useState(0);
+const drawerWidth = 240;
+
+function AppContent() {
+  const [value, setValue] = React.useState(0);
   const navigate = useNavigate();
   const location = useLocation();
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const [drawerOpen, setDrawerOpen] = React.useState(false);
 
   // Mapear rutas a índices de pestañas
   const tabNameToIndex = {
@@ -49,7 +53,7 @@ function App() {
     '/purchase-history': 3,
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     const currentPath = location.pathname;
     const currentIndex = indexToTabName[currentPath];
     if (currentIndex !== undefined) {
@@ -60,6 +64,9 @@ function App() {
   const handleChange = (event, newValue) => {
     setValue(newValue);
     navigate(tabNameToIndex[newValue]);
+    if (isMobile) {
+      setDrawerOpen(false); // Cerrar el drawer en dispositivos móviles al seleccionar una pestaña
+    }
   };
 
   const toggleDrawer = (open) => (event) => {
@@ -81,13 +88,17 @@ function App() {
 
   const drawerList = () => (
     <Box
-      sx={{ width: 250 }}
+      sx={{ width: drawerWidth }}
       role="presentation"
       onClick={toggleDrawer(false)}
       onKeyDown={toggleDrawer(false)}
     >
+      {/* Indicador de Saldo de Tokens en la Parte Superior del Sidebar */}
+      <Box sx={{ padding: theme.spacing(2), display: 'flex', alignItems: 'center' }}>
+        <TokenBalanceWeb3 />
+      </Box>
       <List>
-        {menuItems.map((item, index) => (
+        {menuItems.map((item) => (
           <ListItem button key={item.label} onClick={() => navigate(item.path)}>
             <ListItemIcon>
               {item.icon}
@@ -100,136 +111,72 @@ function App() {
   );
 
   return (
-    <div>
-      {/* Navbar Mejorada con Pestañas Centradas */}
-      <AppBar position="static" color="primary">
-        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          {/* Menú de Hamburguesa (Solo en Pantallas Pequeñas) */}
+    <Box sx={{ display: 'flex' }}>
+      <CssBaseline />
+      {/* Navbar Superior */}
+      <AppBar position="fixed" color="primary" sx={{ zIndex: theme.zIndex.drawer + 1 }}>
+        <Toolbar sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          {/* Botón de Hamburguesa para abrir el Sidebar */}
           <IconButton
-            edge="start"
             color="inherit"
-            aria-label="menu"
-            sx={{ display: { xs: 'block', sm: 'none' } }}
+            aria-label="open drawer"
+            edge="start"
             onClick={toggleDrawer(true)}
+            sx={{ position: 'absolute', left: theme.spacing(2), display: { sm: 'none' } }}
           >
             <MenuIcon />
           </IconButton>
 
-          {/* Título de la Aplicación */}
+          {/* Título de la Aplicación Centrado */}
           <Typography 
-            variant="h6" 
+            variant="h5" 
             component="div" 
             sx={{ 
-              flexGrow: { xs: 1, sm: 0 }, 
-              textAlign: { xs: 'center', sm: 'left' }, 
               fontFamily: 'Roboto Slab, serif',
               fontWeight: 'bold'
             }}
           >
             Ez-Cars 2
           </Typography>
-
-          {/* Pestañas de Navegación (Centradas en Pantallas Medianas y Grandes) */}
-          <Tabs 
-            value={value} 
-            onChange={handleChange} 
-            textColor="inherit" 
-            indicatorColor="secondary"
-            sx={{ 
-              display: { xs: 'none', sm: 'flex' }, 
-              marginLeft: 'auto',
-              flexGrow: 1,
-              justifyContent: 'center'
-            }} 
-          >
-            <Tab 
-              icon={<LocalOfferIcon sx={{ fontSize: 20 }} />} 
-              label="Faucet" 
-              sx={{ 
-                cursor: 'pointer',
-                transition: 'color 0.3s',
-                '&.Mui-selected': { 
-                  color: 'secondary.main', 
-                  fontWeight: 'bold' 
-                },
-                '&:hover': {
-                  color: 'secondary.light',
-                }
-              }} 
-            />
-            <Tab 
-              icon={<AddCircleOutlineIcon sx={{ fontSize: 20 }} />} 
-              label="Enlistar Auto" 
-              sx={{ 
-                cursor: 'pointer',
-                transition: 'color 0.3s',
-                '&.Mui-selected': { 
-                  color: 'secondary.main', 
-                  fontWeight: 'bold' 
-                },
-                '&:hover': {
-                  color: 'secondary.light',
-                }
-              }} 
-            />
-            <Tab 
-              icon={<DirectionsCarIcon sx={{ fontSize: 20 }} />} 
-              label="Autos Disponibles" 
-              sx={{ 
-                cursor: 'pointer',
-                transition: 'color 0.3s',
-                '&.Mui-selected': { 
-                  color: 'secondary.main', 
-                  fontWeight: 'bold' 
-                },
-                '&:hover': {
-                  color: 'secondary.light',
-                }
-              }} 
-            />
-            <Tab 
-              icon={<HistoryIcon sx={{ fontSize: 20 }} />} 
-              label="Historial de Compras" 
-              sx={{ 
-                cursor: 'pointer',
-                transition: 'color 0.3s',
-                '&.Mui-selected': { 
-                  color: 'secondary.main', 
-                  fontWeight: 'bold' 
-                },
-                '&:hover': {
-                  color: 'secondary.light',
-                }
-              }} 
-            />
-          </Tabs>
-
-          {/* Indicador de Saldo de Tokens */}
-          <Box sx={{ marginLeft: { xs: 0, sm: 2 } }}>
-            <TokenBalanceWeb3 />
-          </Box>
         </Toolbar>
       </AppBar>
 
-      {/* Drawer para el Menú de Hamburguesa */}
+      {/* Sidebar Drawer */}
       <Drawer
-        anchor="left"
-        open={drawerOpen}
+        variant={isMobile ? 'temporary' : 'permanent'}
+        open={isMobile ? drawerOpen : true}
         onClose={toggleDrawer(false)}
+        ModalProps={{
+          keepMounted: true, // Mejor rendimiento en dispositivos móviles
+        }}
+        sx={{
+          '& .MuiDrawer-paper': {
+            width: drawerWidth,
+            boxSizing: 'border-box',
+          },
+          display: { xs: 'block', sm: 'block' },
+        }}
       >
         {drawerList()}
       </Drawer>
 
       {/* Contenido Principal */}
-      <Container sx={{ marginTop: 4 }}>
+      <Box
+        component="main"
+        sx={{ 
+          flexGrow: 1, 
+          padding: theme.spacing(3),
+          marginTop: theme.spacing(8), // Espacio para el AppBar
+        }}
+      >
         <Routes>
           <Route path="/" element={<Faucet />} />
           <Route path="/sell-car" element={<SellCar />} />
           <Route path="/car-list" element={<CarList />} />
           <Route path="/purchase-history" element={<PurchaseHistory />} />
         </Routes>
-      </Container>
-    </div>
+      </Box>
+    </Box>
   );
 }
 
@@ -237,7 +184,7 @@ export default function WrappedApp() {
   return (
     <Web3Provider>
       <Router>
-        <App />
+        <AppContent />
       </Router>
     </Web3Provider>
   );

@@ -1,8 +1,9 @@
 // frontend/src/TokenBalanceWeb3.js
 import React, { useEffect, useState, useContext } from 'react';
-import { Box, Typography, CircularProgress } from '@mui/material';
+import { Box, Typography, CircularProgress, Tooltip } from '@mui/material';
 import { Web3Context } from './Web3Context';
-import abi from './tokenABI.json'; // Asegúrate de que la ruta sea correcta
+import abi from './tokenABI.json'; 
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet'; // Icono representativo
 
 function TokenBalanceWeb3() {
   const { currentAccount, web3Instance } = useContext(Web3Context);
@@ -26,7 +27,7 @@ function TokenBalanceWeb3() {
 
     try {
       const balanceWei = await tokenContract.methods.balanceOf(currentAccount).call();
-      const balancePD = web3Instance.utils.fromWei(balanceWei, 'ether');
+      const balancePD = web3Instance.utils.fromWei(balanceWei, 'ether'); // Asumiendo 18 decimales
       setBalance(balancePD);
     } catch (err) {
       console.error('Error al obtener el saldo con Web3:', err);
@@ -57,16 +58,10 @@ function TokenBalanceWeb3() {
   return (
     <Box
       sx={{
-        position: 'fixed',
-        top: 16,
-        right: 16,
-        backgroundColor: 'rgba(255, 255, 255, 0.8)',
-        padding: '8px 16px',
-        borderRadius: '8px',
-        boxShadow: 3,
+        padding: theme => theme.spacing(2),
         display: 'flex',
         alignItems: 'center',
-        zIndex: 1000,
+        gap: theme => theme.spacing(1),
       }}
     >
       {loading ? (
@@ -76,9 +71,14 @@ function TokenBalanceWeb3() {
           {error}
         </Typography>
       ) : (
-        <Typography variant="body1">
-          🪙 <strong>Saldo PD:</strong> {balance}
-        </Typography>
+        <Tooltip title={`Saldo: ${balance} PD`} arrow>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <AccountBalanceWalletIcon />
+            <Typography variant="body1" sx={{ marginLeft: 0.5 }}>
+              {balance} PD
+            </Typography>
+          </Box>
+        </Tooltip>
       )}
     </Box>
   );
