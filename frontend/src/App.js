@@ -1,5 +1,5 @@
 // frontend/src/App.js
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { 
   CssBaseline,
@@ -31,14 +31,13 @@ import { Web3Provider } from './Web3Context';
 const drawerWidth = 240;
 
 function AppContent() {
-  const [value, setValue] = React.useState(0);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const [drawerOpen, setDrawerOpen] = React.useState(false);
 
-  // Mapear rutas a índices de pestañas
+  // Mapeo de rutas a índices
   const tabNameToIndex = {
     0: '/',
     1: '/sell-car',
@@ -53,30 +52,18 @@ function AppContent() {
     '/purchase-history': 3,
   };
 
-  React.useEffect(() => {
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  useEffect(() => {
     const currentPath = location.pathname;
     const currentIndex = indexToTabName[currentPath];
     if (currentIndex !== undefined) {
-      setValue(currentIndex);
+      setSelectedIndex(currentIndex);
     }
   }, [location.pathname]);
 
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-    navigate(tabNameToIndex[newValue]);
-    if (isMobile) {
-      setDrawerOpen(false); // Cerrar el drawer en dispositivos móviles al seleccionar una pestaña
-    }
-  };
-
-  const toggleDrawer = (open) => (event) => {
-    if (
-      event.type === 'keydown' &&
-      (event.key === 'Tab' || event.key === 'Shift')
-    ) {
-      return;
-    }
-    setDrawerOpen(open);
+  const handleDrawerToggle = () => {
+    setDrawerOpen(!drawerOpen);
   };
 
   const menuItems = [
@@ -90,16 +77,24 @@ function AppContent() {
     <Box
       sx={{ width: drawerWidth }}
       role="presentation"
-      onClick={toggleDrawer(false)}
-      onKeyDown={toggleDrawer(false)}
+      onClick={handleDrawerToggle}
+      onKeyDown={handleDrawerToggle}
     >
       {/* Indicador de Saldo de Tokens en la Parte Superior del Sidebar */}
       <Box sx={{ padding: theme.spacing(2), display: 'flex', alignItems: 'center' }}>
         <TokenBalanceWeb3 />
       </Box>
       <List>
-        {menuItems.map((item) => (
-          <ListItem button key={item.label} onClick={() => navigate(item.path)}>
+        {menuItems.map((item, index) => (
+          <ListItem 
+            button 
+            key={item.label} 
+            selected={selectedIndex === index} 
+            onClick={() => {
+              navigate(item.path);
+              setSelectedIndex(index);
+            }}
+          >
             <ListItemIcon>
               {item.icon}
             </ListItemIcon>
@@ -116,13 +111,16 @@ function AppContent() {
       {/* Navbar Superior */}
       <AppBar position="fixed" color="primary" sx={{ zIndex: theme.zIndex.drawer + 1 }}>
         <Toolbar sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          {/* Botón de Hamburguesa para abrir el Sidebar */}
+          {/* Botón de Hamburguesa Siempre Visible */}
           <IconButton
             color="inherit"
             aria-label="open drawer"
             edge="start"
-            onClick={toggleDrawer(true)}
-            sx={{ position: 'absolute', left: theme.spacing(2), display: { sm: 'none' } }}
+            onClick={handleDrawerToggle}
+            sx={{ 
+              position: 'absolute', 
+              left: theme.spacing(2),
+            }}
           >
             <MenuIcon />
           </IconButton>
@@ -133,7 +131,7 @@ function AppContent() {
             component="div" 
             sx={{ 
               fontFamily: 'Roboto Slab, serif',
-              fontWeight: 'bold'
+              fontWeight: 'bold',
             }}
           >
             Ez-Cars 2
@@ -143,9 +141,9 @@ function AppContent() {
 
       {/* Sidebar Drawer */}
       <Drawer
-        variant={isMobile ? 'temporary' : 'permanent'}
-        open={isMobile ? drawerOpen : true}
-        onClose={toggleDrawer(false)}
+        variant="temporary"
+        open={drawerOpen}
+        onClose={handleDrawerToggle}
         ModalProps={{
           keepMounted: true, // Mejor rendimiento en dispositivos móviles
         }}
@@ -154,7 +152,6 @@ function AppContent() {
             width: drawerWidth,
             boxSizing: 'border-box',
           },
-          display: { xs: 'block', sm: 'block' },
         }}
       >
         {drawerList()}

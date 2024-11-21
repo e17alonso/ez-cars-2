@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Box, Typography, CircularProgress, Tooltip } from '@mui/material';
 import { Web3Context } from './Web3Context';
-import abi from './tokenABI.json'; 
+import abi from './tokenABI.json'; // Asegúrate de que la ruta sea correcta
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet'; // Icono representativo
 
 function TokenBalanceWeb3() {
@@ -58,7 +58,6 @@ function TokenBalanceWeb3() {
   return (
     <Box
       sx={{
-        padding: theme => theme.spacing(2),
         display: 'flex',
         alignItems: 'center',
         gap: theme => theme.spacing(1),
