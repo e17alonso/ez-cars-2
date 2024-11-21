@@ -1,5 +1,6 @@
 // frontend/src/App.js
 import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { Container, AppBar, Toolbar, Typography, Tabs, Tab, Box } from '@mui/material';
 import Faucet from './Faucet';
 import SellCar from './SellCar';
@@ -8,9 +9,26 @@ import PurchaseHistory from './PurchaseHistory';
 
 function App() {
   const [value, setValue] = React.useState(0);
+  const navigate = useNavigate();
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
+    switch(newValue){
+      case 0:
+        navigate('/');
+        break;
+      case 1:
+        navigate('/sell-car');
+        break;
+      case 2:
+        navigate('/car-list');
+        break;
+      case 3:
+        navigate('/purchase-history');
+        break;
+      default:
+        navigate('/');
+    }
   };
 
   return (
@@ -28,14 +46,22 @@ function App() {
           <Tab label="Historial de Compras" />
         </Tabs>
         <Box sx={{ marginTop: 4 }}>
-          {value === 0 && <Faucet />}
-          {value === 1 && <SellCar />}
-          {value === 2 && <CarList />}
-          {value === 3 && <PurchaseHistory />}
+          <Routes>
+            <Route path="/" element={<Faucet />} />
+            <Route path="/sell-car" element={<SellCar />} />
+            <Route path="/car-list" element={<CarList />} />
+            <Route path="/purchase-history" element={<PurchaseHistory />} />
+          </Routes>
         </Box>
       </Container>
     </div>
   );
 }
 
-export default App;
+export default function WrappedApp() {
+  return (
+    <Router>
+      <App />
+    </Router>
+  );
+}
