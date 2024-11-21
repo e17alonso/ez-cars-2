@@ -61,6 +61,7 @@ function TokenBalanceWeb3() {
         display: 'flex',
         alignItems: 'center',
         gap: theme => theme.spacing(1),
+        cursor: 'pointer', // Cambiar cursor a pointer
       }}
     >
       {loading ? (
@@ -73,7 +74,14 @@ function TokenBalanceWeb3() {
         <Tooltip title={`Saldo: ${balance} PD`} arrow>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <AccountBalanceWalletIcon />
-            <Typography variant="body1" sx={{ marginLeft: 0.5 }}>
+            <Typography 
+              variant="body1" 
+              sx={{ 
+                marginLeft: 0.5,
+                fontFamily: 'Roboto Slab, serif', // Uniformizar fuente
+                fontWeight: 'medium',
+              }}
+            >
               {balance} PD
             </Typography>
           </Box>

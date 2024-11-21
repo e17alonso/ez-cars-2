@@ -80,10 +80,14 @@ function AppContent() {
       onClick={handleDrawerToggle}
       onKeyDown={handleDrawerToggle}
     >
+      {/* Espaciador para la altura de la Navbar */}
+      <Toolbar />
+
       {/* Indicador de Saldo de Tokens en la Parte Superior del Sidebar */}
       <Box sx={{ padding: theme.spacing(2), display: 'flex', alignItems: 'center' }}>
         <TokenBalanceWeb3 />
       </Box>
+      
       <List>
         {menuItems.map((item, index) => (
           <ListItem 
@@ -94,11 +98,28 @@ function AppContent() {
               navigate(item.path);
               setSelectedIndex(index);
             }}
+            sx={{
+              '&.Mui-selected': {
+                backgroundColor: theme.palette.action.selected,
+                '& .MuiListItemIcon-root': {
+                  color: theme.palette.primary.main,
+                },
+              },
+              '&:hover': {
+                backgroundColor: theme.palette.action.hover,
+              },
+            }}
           >
-            <ListItemIcon>
+            <ListItemIcon sx={{ minWidth: '40px', color: selectedIndex === index ? theme.palette.primary.main : 'inherit' }}>
               {item.icon}
             </ListItemIcon>
-            <ListItemText primary={item.label} />
+            <ListItemText 
+              primary={item.label} 
+              primaryTypographyProps={{
+                fontFamily: 'Roboto Slab, serif',
+                fontWeight: 'medium',
+              }}
+            />
           </ListItem>
         ))}
       </List>
@@ -148,9 +169,11 @@ function AppContent() {
           keepMounted: true, // Mejor rendimiento en dispositivos móviles
         }}
         sx={{
+          display: { xs: 'block', sm: 'block' },
           '& .MuiDrawer-paper': {
             width: drawerWidth,
             boxSizing: 'border-box',
+            marginTop: '64px', // Altura estándar del AppBar (56px en móvil, 64px en desktop)
           },
         }}
       >
@@ -163,7 +186,8 @@ function AppContent() {
         sx={{ 
           flexGrow: 1, 
           padding: theme.spacing(3),
-          marginTop: theme.spacing(8), // Espacio para el AppBar
+          marginTop: '64px', // Espacio para el AppBar
+          width: { sm: `calc(100% - ${drawerWidth}px)` },
         }}
       >
         <Routes>
