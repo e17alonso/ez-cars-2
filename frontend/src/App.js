@@ -6,7 +6,8 @@ import Faucet from './Faucet';
 import SellCar from './SellCar';
 import CarList from './CarList';
 import PurchaseHistory from './PurchaseHistory';
-import TokenBalanceWeb3 from './TokenBalanceWeb3';
+import TokenBalanceWeb3 from './TokenBalanceWeb3'; // Importa el componente
+import { Web3Provider } from './Web3Context'; // Importa el Web3Provider
 
 function App() {
   const [value, setValue] = React.useState(0);
@@ -35,7 +36,7 @@ function App() {
   return (
     <div>
       {/* Integrar el Indicador de Tokens */}
-      <TokenBalanceWeb3 /> {/* O <TokenBalanceWeb3 /> si usas Web3 directamente */}
+      <TokenBalanceWeb3 />
 
       <AppBar position="static">
         <Toolbar>
@@ -64,8 +65,10 @@ function App() {
 
 export default function WrappedApp() {
   return (
-    <Router>
-      <App />
-    </Router>
+    <Web3Provider>
+      <Router>
+        <App />
+      </Router>
+    </Web3Provider>
   );
 }

@@ -2,8 +2,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Box, Typography, CircularProgress } from '@mui/material';
 import { Web3Context } from './Web3Context';
-import Web3 from 'web3';
-import abi from './tokenABI.json'; // Asegúrate de que la ruta sea correcta
+import abi from './contracts/tokenABI.json'; // Asegúrate de que la ruta sea correcta
 
 function TokenBalanceWeb3() {
   const { currentAccount, web3Instance } = useContext(Web3Context);
