@@ -1,15 +1,27 @@
 // frontend/src/CarList.js
 import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
-import { Button, Typography, Box, Grid, Card, CardContent, CardActions, CircularProgress, Alert } from '@mui/material';
+import { 
+  Button, 
+  Typography, 
+  Box, 
+  Grid, 
+  Card, 
+  CardContent, 
+  CardActions, 
+  CircularProgress, 
+  Backdrop,
+  Alert 
+} from '@mui/material';
 import { Web3Context } from './Web3Context';
 import { ethers } from 'ethers';
 import tokenABI from './tokenABI.json';
 
 function CarList() {
   const [cars, setCars] = useState([]);
-  const [loading, setLoading] = useState(true); // Estado de carga
-  const [error, setError] = useState(null); // Estado de error
+  const [loading, setLoading] = useState(true); // Estado de carga para obtener autos
+  const [error, setError] = useState(null); // Estado de error para obtener autos
+  const [purchaseLoading, setPurchaseLoading] = useState(false); // Estado de carga para compra
   const { currentAccount } = useContext(Web3Context);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '0x219c60fA57AfFA6BD19D0bdCf1a6e149850d252f';
 
@@ -30,6 +42,8 @@ function CarList() {
 
   const buyCar = async (car) => {
     try {
+      setPurchaseLoading(true); // Iniciar el loader
+
       // Inicializar ethers
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
@@ -41,6 +55,7 @@ function CarList() {
 
       if (balance.lt(priceInWei)) {
         alert('Balance insuficiente de PD');
+        setPurchaseLoading(false); // Detener el loader
         return;
       }
 
@@ -63,6 +78,8 @@ function CarList() {
     } catch (error) {
       console.error('Error al comprar el auto:', error);
       alert('Error al realizar la compra');
+    } finally {
+      setPurchaseLoading(false); // Detener el loader en cualquier caso
     }
   };
 
@@ -103,7 +120,12 @@ function CarList() {
                   <Typography variant="body2">Precio: {car.price} PD</Typography>
                 </CardContent>
                 <CardActions>
-                  <Button variant="contained" color="primary" onClick={() => buyCar(car)}>
+                  <Button 
+                    variant="contained" 
+                    color="primary" 
+                    onClick={() => buyCar(car)}
+                    disabled={purchaseLoading} // Deshabilitar el botón mientras se realiza la compra
+                  >
                     Comprar
                   </Button>
                 </CardActions>
@@ -112,6 +134,19 @@ function CarList() {
           ))}
         </Grid>
       )}
+
+      {/* Loader Overlay para la Compra */}
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={purchaseLoading}
+      >
+        <Box sx={{ textAlign: 'center' }}>
+          <CircularProgress color="inherit" />
+          <Typography variant="h6" sx={{ marginTop: 2 }}>
+            Compra en proceso...
+          </Typography>
+        </Box>
+      </Backdrop>
     </Box>
   );
 }
