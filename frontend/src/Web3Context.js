@@ -31,6 +31,12 @@ export const Web3Provider = ({ children }) => {
     if (window.ethereum) {
       window.ethereum.on('accountsChanged', (accounts) => {
         setCurrentAccount(accounts[0] || null);
+        // Re-inicializar Web3 si la cuenta cambia
+        if (accounts[0]) {
+          setWeb3Instance(new Web3(window.ethereum));
+        } else {
+          setWeb3Instance(null);
+        }
       });
     }
   }, []);

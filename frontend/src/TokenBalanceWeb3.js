@@ -3,8 +3,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { Box, Typography, CircularProgress } from '@mui/material';
 import { Web3Context } from './Web3Context';
 import Web3 from 'web3';
-import abi from './tokenABI.json';
-; // Asegúrate de tener el ABI del contrato
+import abi from './tokenABI.json'; // Asegúrate de que la ruta sea correcta
 
 function TokenBalanceWeb3() {
   const { currentAccount, web3Instance } = useContext(Web3Context);
@@ -12,10 +11,20 @@ function TokenBalanceWeb3() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS; // Asegúrate de definir esta variable
-  const tokenContract = new web3Instance.eth.Contract(abi, contractAddress);
+  const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS; // Define esta variable en .env
+  let tokenContract;
+
+  if (web3Instance && contractAddress && abi) {
+    tokenContract = new web3Instance.eth.Contract(abi, contractAddress);
+  }
 
   const fetchBalance = async () => {
+    if (!web3Instance || !contractAddress || !abi) {
+      setError('Web3 no está inicializado correctamente.');
+      setLoading(false);
+      return;
+    }
+
     try {
       const balanceWei = await tokenContract.methods.balanceOf(currentAccount).call();
       const balancePD = web3Instance.utils.fromWei(balanceWei, 'ether');
@@ -31,10 +40,15 @@ function TokenBalanceWeb3() {
   useEffect(() => {
     if (currentAccount && web3Instance) {
       fetchBalance();
+    } else {
+      setLoading(false);
     }
+
     // Re-fetch el balance cada 60 segundos
     const interval = setInterval(() => {
-      fetchBalance();
+      if (currentAccount && web3Instance) {
+        fetchBalance();
+      }
     }, 60000);
     return () => clearInterval(interval);
   }, [currentAccount, web3Instance]);
