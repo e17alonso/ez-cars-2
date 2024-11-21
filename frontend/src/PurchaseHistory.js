@@ -1,11 +1,13 @@
 // frontend/src/PurchaseHistory.js
 import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
-import { Typography, Box, Card, CardContent, Grid } from '@mui/material';
+import { Typography, Box, Card, CardContent, Grid, CircularProgress, Alert } from '@mui/material';
 import { Web3Context } from './Web3Context';
 
 function PurchaseHistory() {
   const [purchases, setPurchases] = useState([]);
+  const [loading, setLoading] = useState(true); // Estado de carga
+  const [error, setError] = useState(null); // Estado de error
   const { currentAccount } = useContext(Web3Context);
 
   useEffect(() => {
@@ -15,12 +17,33 @@ function PurchaseHistory() {
         setPurchases(response.data);
       } catch (error) {
         console.error('Error al obtener el historial de compras:', error);
+        setError('No se pudo obtener el historial de compras.');
+      } finally {
+        setLoading(false);
       }
     };
     if (currentAccount) {
       getPurchases();
+    } else {
+      setLoading(false);
     }
   }, [currentAccount]);
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 4 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 4 }}>
+        <Alert severity="error">{error}</Alert>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ padding: 2 }}>
