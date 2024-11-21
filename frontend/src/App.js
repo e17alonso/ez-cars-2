@@ -6,6 +6,7 @@ import Faucet from './Faucet';
 import SellCar from './SellCar';
 import CarList from './CarList';
 import PurchaseHistory from './PurchaseHistory';
+import TokenBalanceWeb3 from './TokenBalanceWeb3';
 
 function App() {
   const [value, setValue] = React.useState(0);
@@ -33,6 +34,9 @@ function App() {
 
   return (
     <div>
+      {/* Integrar el Indicador de Tokens */}
+      <TokenBalanceWeb3 /> {/* O <TokenBalanceWeb3 /> si usas Web3 directamente */}
+
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6">Ez-Cars 2</Typography>
